@@ -1,0 +1,18 @@
+{
+  "extends": [
+    "standard",
+    "standard-jsx",
+    "plugin:vue/recommended"
+  ],
+  "ignorePatterns": ["lib/*.js"],
+  "rules": {
+    "no-unused-vars": "off"
+  },
+  "root": true,
+  "env": {
+    "node": true
+  },
+  "parserOptions": {
+    "parser": "babel-eslint"
+  },
+}

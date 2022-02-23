@@ -1,15 +1,16 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <NetworkGraph/>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import NetworkGraph from '@/components/NetworkGraph'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    NetworkGraph
   }
 }
 </script>
@@ -22,5 +23,10 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+
+VNetworkGraph {
+  height: 500px;
+  width: 500px;
 }
 </style>
