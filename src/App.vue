@@ -1,6 +1,6 @@
 <template>
   <div>
-    <NetworkGraph/>
+    <NetworkGraph />
   </div>
 </template>
 

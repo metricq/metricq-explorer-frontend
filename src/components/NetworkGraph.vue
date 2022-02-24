@@ -1,31 +1,54 @@
 <template>
   <div class="NetGraph">
     <nav class="navbar navbar-light bg-light">
-      <input v-model="inputNode" placeholder="Knoten">
+      <input
+        v-model="inputNode"
+        placeholder="Knoten"
+      >
       <label
-          id="node_export"
-          class="btn btn-outline-primary btn-navbar"
-          @click="nodeButtonClicked"
+        id="node_export"
+        class="btn btn-outline-primary btn-navbar"
+        @click="nodeButtonClicked"
       >neuer Knoten</label>
-      <input v-model="inputEdge1" placeholder="Start">
-      <input v-model="inputEdge2" placeholder="Ziel">
+      <input
+        v-model="inputEdge1"
+        placeholder="Start"
+      >
+      <input
+        v-model="inputEdge2"
+        placeholder="Ziel"
+      >
       <label
-          id="edge_export"
-          class="btn btn-outline-primary btn-navbar"
-          @click="edgeButtonClicked"
+        id="edge_export"
+        class="btn btn-outline-primary btn-navbar"
+        @click="edgeButtonClicked"
       >neue Verbindung</label>
+      <input
+        v-model="randomNode"
+        placeholder="Anzahl Knoten"
+      >
+      <input
+        v-model="randomEdge"
+        placeholder="Anzahl Verbindungen"
+      >
+      <label
+        id="random_btn"
+        class="btn btn-outline-primary btn-navbar"
+        @click="randomButtonClicked"
+      >Zufall!</label>
     </nav>
     <VNetworkGraph
-        :nodes="nodes"
-        :edges="edges"
-        style="height: 500px"
+      :nodes="nodes"
+      :edges="edges"
+      style="height: 500px"
     />
   </div>
-
 </template>
 
 <script>
 
+// Endpoint erzeugt JSON mit zufälligen Werten
+// in Vue Anzahl nodes/edges
 export default {
   name: 'NetworkGraph',
   components: {},
@@ -44,19 +67,35 @@ export default {
       },
       inputNode: '',
       inputEdge1: '',
-      inputEdge2: ''
+      inputEdge2: '',
+      randomNode: '',
+      randomEdge: ''
     }
   },
   methods: {
     nodeButtonClicked: function () {
+      this.nodes = {}
       const newNodeKey = 'node' + this.inputNode
       const newNodeValue = { name: 'Node ' + this.inputNode }
       this.nodes[newNodeKey] = newNodeValue
     },
     edgeButtonClicked: function () {
+      this.edges = {}
       const newEdgeKey = 'edge' + this.inputEdge1 + 'to' + this.inputEdge2
       const newEdgeValue = { source: 'node' + this.inputEdge1, target: 'node' + this.inputEdge2 }
       this.edges[newEdgeKey] = newEdgeValue
+    },
+    randomButtonClicked: function () {
+      const NodeCount = this.randomNode === '' ? 3 : this.randomNode
+      const EdgeCount = this.randomEdge === '' ? 3 : this.randomEdge
+      const url = 'http://localhost:8080/' + NodeCount + '*' + EdgeCount
+      fetch(url)
+        .then(response => response.json())
+        .then(data => this.readJson(data))
+    },
+    readJson: function (data) {
+      this.nodes = data.nodes
+      this.edges = data.edges
     }
   }
 }
