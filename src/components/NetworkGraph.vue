@@ -28,6 +28,7 @@
       :edges="edges"
       :layouts="layouts"
       :configs="configs"
+      :event-handlers="eventHandlers"
       style="height: 500px"
     />
   </div>
@@ -55,8 +56,12 @@ export default {
       },
       configs: reactive(
         vNG.defineConfigs({
+          view: {
+            doubleClickZoomEnabled: false
+          },
           node: {
             dragable: true,
+            selectable: true,
             normal: {
               type: node => node.type,
               radius: 20,
@@ -69,6 +74,9 @@ export default {
             },
             label: {
               direction: node => node.direction
+            },
+            hover: {
+              color: 'yellow'
             }
           },
           edge: {
@@ -81,10 +89,18 @@ export default {
                 units: 'strokeWidth',
                 color: null
               }
+            },
+            hover: {
+              color: 'yellow'
             }
           }
         })
       ),
+      eventHandlers: {
+        'node:dblclick': ({ node }) => {
+          this.changeMetric(node)
+        }
+      },
       metric: ''
     }
   },
@@ -98,6 +114,12 @@ export default {
       this.edges = data.edges
       for (const [key, value] of Object.entries(data.layout)) {
         this.layouts.nodes[key] = value
+      }
+    },
+    changeMetric: function (node) {
+      if (this.nodes[node].type === 'circle') {
+        const url = 'http://localhost:8000/api/explorer/' + node
+        fetch(url).then(response => response.json()).then(data => this.readJson(data))
       }
     }
   }
