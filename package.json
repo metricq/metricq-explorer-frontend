@@ -14,7 +14,8 @@
     "eslint-config-standard-jsx": "^10.0.0",
     "standard": "^16.0.4",
     "v-network-graph": "^0.5.0",
-    "vue": "^3.2.31"
+    "vue": "^3.2.31",
+    "vue3-simple-typeahead": "^1.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
