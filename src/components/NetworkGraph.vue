@@ -138,6 +138,7 @@ export default {
     },
     selectItem (item) {
       this.metric = item
+      this.nodeButtonClicked()
     },
     onInput (event) {
       this.metric = event.input
