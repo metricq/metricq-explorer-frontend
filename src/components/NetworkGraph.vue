@@ -1,5 +1,11 @@
 <template>
   <div class="NetGraph">
+    <div
+      ref="overlay"
+      class="overlay"
+    >
+      <div class="loader" />
+    </div>
     <nav class="navbar navbar-light bg-light">
       <div class="navbar-brand">
         <img
@@ -120,8 +126,12 @@ export default {
   },
   methods: {
     nodeButtonClicked: function () {
+      this.$refs.overlay.style.display = 'block'
       const url = 'http://localhost:8000/api/explorer/' + this.metric
-      fetch(url).then(response => response.json()).then(data => this.readJson(data))
+      fetch(url).then(response => response.json()).then(data => {
+        this.$refs.overlay.style.display = 'none'
+        this.readJson(data)
+      })
     },
     readJson: function (data) {
       this.nodes = data.nodes
@@ -194,4 +204,32 @@ export default {
   width: 300px;
 }
 
+.overlay {
+  position: absolute;
+  left:0;
+  background: rgba(0,0,0,.5);
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  display: none;
+}
+
+.loader {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  width: 80px;
+  height: 80px;
+  margin: -40px 0 0 -40px;
+  border: 4px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 4px solid #3498db;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 </style>
