@@ -23,7 +23,7 @@
           placeholder="Metrik-Namen eingeben"
           :items="options"
           :min-input-length="1"
-          @selectItem="selectItem"
+          @selectItem="requestData"
           @onInput="onInput"
           @onFocus="onFocus"
         />
@@ -31,7 +31,7 @@
       <div
         id="node_export"
         class="btn btn-outline-primary btn-navbar"
-        @click="nodeButtonClicked"
+        @click="requestData(metric)"
       >
         Metrik hinzufügen
       </div>
@@ -56,7 +56,7 @@ export default {
   name: 'NetworkGraph',
   components: {
   },
-  data: function () {
+  data () {
     return {
       nodes: {},
       edges: {},
@@ -116,7 +116,7 @@ export default {
       ),
       eventHandlers: {
         'node:dblclick': ({ node }) => {
-          this.changeMetric(node)
+          this.requestData(node)
         }
       },
       metric: '',
@@ -125,30 +125,21 @@ export default {
     }
   },
   methods: {
-    nodeButtonClicked: function () {
+    requestData (requestMetric) {
+      this.metric = requestMetric
       this.$refs.overlay.style.display = 'block'
-      const url = 'http://localhost:8000/api/explorer/' + this.metric
+      const url = 'http://localhost:8000/api/explorer/' + requestMetric
       fetch(url).then(response => response.json()).then(data => {
         this.$refs.overlay.style.display = 'none'
-        this.readJson(data)
+        this.read(data)
       })
     },
-    readJson: function (data) {
+    read (data) {
       this.nodes = data.nodes
       this.edges = data.edges
       for (const [key, value] of Object.entries(data.layout)) {
         this.layouts.nodes[key] = value
       }
-    },
-    changeMetric: function (node) {
-      if (this.nodes[node].type === 'circle') {
-        const url = 'http://localhost:8000/api/explorer/' + node
-        fetch(url).then(response => response.json()).then(data => this.readJson(data))
-      }
-    },
-    selectItem (item) {
-      this.metric = item
-      this.nodeButtonClicked()
     },
     onInput (event) {
       this.metric = event.input
