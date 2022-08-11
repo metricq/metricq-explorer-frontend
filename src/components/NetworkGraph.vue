@@ -129,12 +129,12 @@ export default {
       this.metric = requestMetric
       this.$refs.overlay.style.display = 'block'
       const url = 'http://localhost:8000/api/explorer/' + requestMetric
-      fetch(url).then(response => response.json()).then(data => {
-        this.$refs.overlay.style.display = 'none'
-        this.read(data)
+      fetch(url).then(response => {
+        this.read(response.json()).then(() => { this.$refs.overlay.style.display = 'none' })
       })
     },
-    read (data) {
+    async read (response) {
+      const data = await response
       this.nodes = data.nodes
       this.edges = data.edges
       for (const [key, value] of Object.entries(data.layout)) {
