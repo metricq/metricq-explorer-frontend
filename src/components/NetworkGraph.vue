@@ -128,7 +128,7 @@ export default {
     requestData (requestMetric) {
       this.metric = requestMetric
       this.$refs.overlay.style.display = 'block'
-      const url = 'http://localhost:8000/api/explorer/' + requestMetric
+      const url = this.backend + '/explorer/' + requestMetric
       fetch(url).then(response => {
         this.read(response.json()).then(() => { this.$refs.overlay.style.display = 'none' })
       })
@@ -150,7 +150,7 @@ export default {
     },
     changeOptions (infix) {
       const requestId = ++this.requestCount
-      const url = 'http://localhost:8000/api/metrics?'
+      const url = this.backend + '/metrics?'
       fetch(url + new URLSearchParams({ infix: infix, limit: 20 })).then(response => response.json()).then(data => {
         if (requestId < this.requestCount) {
           return

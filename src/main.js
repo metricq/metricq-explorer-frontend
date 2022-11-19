@@ -4,9 +4,17 @@ import VNetworkGraph from 'v-network-graph'
 import 'v-network-graph/lib/style.css'
 import SimpleTypeahead from 'vue3-simple-typeahead'
 import 'vue3-simple-typeahead/dist/vue3-simple-typeahead.css'
+import { getMetricQBackendConfig } from '@/configuration'
 
-const app = createApp(App)
-app.use(VNetworkGraph)
-app.use(SimpleTypeahead)
+async function startup () {
+  const metricqBackendConfig = await getMetricQBackendConfig()
 
-app.mount('#app')
+  const app = createApp(App)
+  app.config.globalProperties.backend = metricqBackendConfig.backend
+  app.use(VNetworkGraph)
+  app.use(SimpleTypeahead)
+
+  app.mount('#app')
+}
+
+startup()
