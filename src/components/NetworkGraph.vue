@@ -1,5 +1,11 @@
 <template>
   <div class="NetGraph">
+    <div
+      ref="overlay"
+      class="overlay"
+    >
+      <div class="loader" />
+    </div>
     <nav class="navbar navbar-light bg-light">
       <div class="navbar-brand">
         <img
@@ -17,7 +23,7 @@
           placeholder="Metrik-Namen eingeben"
           :items="options"
           :min-input-length="1"
-          @selectItem="selectItem"
+          @selectItem="requestData"
           @onInput="onInput"
           @onFocus="onFocus"
         />
@@ -25,7 +31,7 @@
       <div
         id="node_export"
         class="btn btn-outline-primary btn-navbar"
-        @click="nodeButtonClicked"
+        @click="requestData(metric)"
       >
         Metrik hinzufügen
       </div>
@@ -50,7 +56,7 @@ export default {
   name: 'NetworkGraph',
   components: {
   },
-  data: function () {
+  data () {
     return {
       nodes: {},
       edges: {},
@@ -110,7 +116,7 @@ export default {
       ),
       eventHandlers: {
         'node:dblclick': ({ node }) => {
-          this.changeMetric(node)
+          this.requestData(node)
         }
       },
       metric: '',
@@ -119,25 +125,21 @@ export default {
     }
   },
   methods: {
-    nodeButtonClicked: function () {
-      const url = 'http://localhost:8000/api/explorer/' + this.metric
-      fetch(url).then(response => response.json()).then(data => this.readJson(data))
+    requestData (requestMetric) {
+      this.metric = requestMetric
+      this.$refs.overlay.style.display = 'block'
+      const url = this.backend + '/explorer/' + requestMetric
+      fetch(url).then(response => {
+        this.read(response.json()).then(() => { this.$refs.overlay.style.display = 'none' })
+      })
     },
-    readJson: function (data) {
+    async read (response) {
+      const data = await response
       this.nodes = data.nodes
       this.edges = data.edges
       for (const [key, value] of Object.entries(data.layout)) {
         this.layouts.nodes[key] = value
       }
-    },
-    changeMetric: function (node) {
-      if (this.nodes[node].type === 'circle') {
-        const url = 'http://localhost:8000/api/explorer/' + node
-        fetch(url).then(response => response.json()).then(data => this.readJson(data))
-      }
-    },
-    selectItem (item) {
-      this.metric = item
     },
     onInput (event) {
       this.metric = event.input
@@ -148,7 +150,7 @@ export default {
     },
     changeOptions (infix) {
       const requestId = ++this.requestCount
-      const url = 'http://localhost:8000/api/metrics?'
+      const url = this.backend + '/metrics?'
       fetch(url + new URLSearchParams({ infix: infix, limit: 20 })).then(response => response.json()).then(data => {
         if (requestId < this.requestCount) {
           return
@@ -193,4 +195,32 @@ export default {
   width: 300px;
 }
 
+.overlay {
+  position: absolute;
+  left:0;
+  background: rgba(0,0,0,.5);
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  display: none;
+}
+
+.loader {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  width: 80px;
+  height: 80px;
+  margin: -40px 0 0 -40px;
+  border: 4px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 4px solid #3498db;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 </style>
